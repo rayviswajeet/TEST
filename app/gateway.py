@@ -2,15 +2,8 @@
 
 Routing  : "fast" and "smart" are nicknames for real models.
 Fallback : if OpenAI fails, the Groq "backup" model answers.
-Cache    : the same prompt twice is answered from memory.
-Cost     : LiteLLM tells us what each call cost.
 """
-import litellm
 from litellm import Router
-from litellm.caching import Cache
-
-litellm.suppress_debug_info = True
-litellm.cache = Cache(type="local")
 
 # 1. The router: nickname -> real model
 router = Router(
@@ -38,12 +31,6 @@ Employee: {ticket['requester']}
 Their request: {ticket['summary']}
 Desk answer: {desk_answer}"""
 
-    response = router.completion(model=model, messages=[{"role": "user", "content": prompt}], caching=True)
-
-    try:
-        cost = litellm.completion_cost(completion_response=response)
-    except Exception:
-        cost = 0     # price unknown (e.g. the Groq backup model)
-    print(f"[LLM Gateway] {model} -> {response.model} | tokens={response.usage.total_tokens} | cost=${round(cost, 6)}")
-
+    response = router.completion(model=model, messages=[{"role": "user", "content": prompt}])
+    print(f"[LLM Gateway] {model} -> {response.model}")
     return response.choices[0].message.content

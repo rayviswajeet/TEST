@@ -19,13 +19,13 @@ def read_email(path):
         body ...
     Returns None when the file is not an email."""
     lines = path.read_text(encoding="utf-8-sig").splitlines()   # utf-8-sig also reads Notepad files
-    if len(lines) < 3 or not lines[0].startswith("From:"):
+    if len(lines) < 3 or not lines[0].startswith("From:") or not lines[1].startswith("Subject:"):
         return None
     return {
         "email_id": path.stem,
         "sender": lines[0].removeprefix("From:").strip(),
         "subject": lines[1].removeprefix("Subject:").strip(),
-        "body": "\n".join(lines[3:]).strip(),
+        "body": "\n".join(lines[2:]).strip(),   # .strip() removes the blank line
     }
 
 
@@ -54,7 +54,7 @@ def process_folder(folder_name):
     for path in sorted(folder.glob("*.txt")):
         email = read_email(path)
         if email is None:
-            print(f"Skipped {path.name}: not an email (it must start with 'From:')")
+            print(f"Skipped {path.name}: not an email (line 1 must be 'From:', line 2 'Subject:')")
             continue
         run_one_email(email)
 

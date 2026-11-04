@@ -31,13 +31,13 @@ Built only with the topics from Krish Naik's
 | Video topic | File | What it does in the flow |
 |-------------|------|--------------------------|
 | LangChain (structured output) | `app/desk.py` | Turns the email into a `Ticket` |
-| Guardrails (PII + custom middleware) | `app/guardrails.py` | Hides email/phone/card, blocks prompt injection |
+| Guardrails (PII + custom middleware) | `app/guardrails.py` | Hides emails, card numbers and `+91 98200 11002`-style phones; blocks prompt injection |
 | Tools | `app/tools.py` | Look up employee, check server, grant access |
 | Vectorless RAG | `app/rag.py` | `search_policy` tool used by the desk agent |
 | Vector RAG (FAISS) | `app/rag.py` | Compared with vectorless RAG in the evaluation |
 | Human-in-the-Loop | `app/desk.py` | Pauses before every grant for manager approval |
 | LangGraph | `app/pipeline.py` | The email workflow: extract → desk → reply |
-| LLM Gateway (LiteLLM) | `app/gateway.py` | Writes the reply email: routing, fallback, cache, cost |
+| LLM Gateway (LiteLLM) | `app/gateway.py` | Writes the reply email: routing (fast / smart model) and fallback (Groq backup) |
 | Deep Agents | `app/report.py` | End-of-day compliance report with a sub-agent |
 | LLM Evaluation (LangSmith) | `app/evals.py` | Scores both RAG systems on a golden dataset |
 
@@ -73,15 +73,14 @@ Everything is printed in the terminal. Nothing is saved to files.
 [LangGraph] node 'extract'
 [Structured Output] {'requester': 'Divya Pillai', 'request_type': 'access_request', 'system': 'prod-db', ...}
 [LangGraph] node 'desk' - ReAct loop: model -> tools -> model ... (create_agent)
-[Memory] thread_id=divya.pillai@acme.com | messages remembered from earlier emails: 0
-[Tools] check_ad_groups(EMP-2002) -> Divya Pillai, active, employee, MFA=True
+[Tools] check_ad_groups(EMP-2002) -> {'employee_id': 'EMP-2002', 'name': 'Divya Pillai', 'status': 'active', ...}
 [Tools] search_policy(max read access hours on prod-db)
-[Vectorless RAG] LLM picked sections: ['1.3 Read Access']
-[Human-in-the-Loop] agent PAUSED before grant_system_access - waiting for the approver
+[Vectorless RAG] LLM picked section 3: {'chapter': '1. Access Control', 'section': '1.3 Read Access'}
+[Human-in-the-Loop] agent PAUSED. It wants to call grant_system_access with: {'employee_id': 'EMP-2002', ...}
    approve / edit / reject: approve
-[Tools] grant_system_access(EMP-2002, prod-db, read, 48h) -> Granted ...
+[Tools] grant_system_access -> {'employee_id': 'EMP-2002', 'name': 'Divya Pillai', 'system': 'prod-db', ...}
 [LangGraph] node 'reply'
-[LLM Gateway] route=smart -> model=gpt-4o | time=1.2s | tokens=310 | cost=$0.001200
+[LLM Gateway] smart -> gpt-4o
 ```
 3. **The reply email** for each email.
 4. At the end: **"Make end-of-day report now? (y/n)"** - the Deep Agent prints the compliance report.
@@ -110,7 +109,7 @@ Only two patterns are used:
 | `it_security_policy.md` | Company policy used by RAG |
 | `incoming_requests.json` | Same sample emails, used by the notebook |
 
-Email file format:
+Email file format (line 1 must be `From:`, line 2 must be `Subject:`, then the body):
 ```
 From: divya.pillai@acme.com
 Subject: Read access to prod-db

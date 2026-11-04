@@ -5,6 +5,7 @@
 3. ask_human : the manager types approve / edit / reject in the terminal.
 4. handle_request : runs the desk and resumes it after each human answer.
 """
+from typing import Literal
 from pydantic import BaseModel, Field
 from langchain.agents import create_agent
 from langchain.agents.middleware import HumanInTheLoopMiddleware
@@ -18,13 +19,14 @@ from app.rag import search_policy
 
 
 # 1. Structured output: the LLM must answer with exactly these fields
+#    Literal[...] = the LLM may only pick one of these words
 class Ticket(BaseModel):
     requester: str = Field(description="Full name of the person who wrote the email")
-    request_type: str = Field(description="One of: access_request, it_support, other")
-    system: str = Field(description="One of: prod-db, aws-prod, vpn, jira, none")
-    access_level: str = Field(description="One of: read, write, admin, none")
-    duration_hours: int = Field(description="Requested hours, 0 if not given")
-    urgency: str = Field(description="One of: low, medium, high, critical")
+    request_type: Literal["access_request", "it_support", "other"]
+    system: str | None = Field(description="System name, e.g. prod-db, aws-prod, vpn, jira")
+    access_level: Literal["read", "write", "admin", "none"]
+    duration_hours: int | None = Field(description="Requested hours, if given")
+    urgency: Literal["low", "medium", "high", "critical"]
     summary: str = Field(description="One-sentence summary of the request")
 
 

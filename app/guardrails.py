@@ -11,6 +11,8 @@ BANNED_PHRASES = ["ignore previous instructions", "ignore all rules", "system pr
 
 # 1. Custom guardrail: runs once, before the agent starts
 #    (LangChain always passes state and runtime; we only need state)
+#    can_jump_to=["end"] is required - without it "jump_to" is ignored and the model still runs.
+#    Simple word match only: good enough for a learning project, not for production.
 @before_agent(can_jump_to=["end"])
 def block_injection(state, runtime):
     text = state["messages"][-1].content.lower()
@@ -26,5 +28,5 @@ GUARDRAILS = [
     block_injection,
     PIIMiddleware("email"),                                   # anna@acme.com       -> [REDACTED_EMAIL]
     PIIMiddleware("credit_card", strategy="mask"),            # 4111 1111 1111 1111 -> ****1111
-    PIIMiddleware("phone", detector=r"\+91 \d{5} \d{5}"),     # +91 98200 11002     -> [REDACTED_PHONE]
+    PIIMiddleware("phone", detector=r"\+91 \d{5} \d{5}"),     # +91 98200 11002     -> [REDACTED_PHONE] (only this format)
 ]

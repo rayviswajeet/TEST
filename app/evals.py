@@ -1,21 +1,32 @@
-"""Topic: LLM Evaluation - LangSmith scores both RAG systems on the same questions."""
-from pydantic import BaseModel
+"""Topic: LLM Evaluation - LangSmith tests both RAG systems on the same questions.
+
+1. Questions + correct answers  (the dataset)
+2. The two systems we test      (question in -> answer out)
+3. The judge                    (an LLM says if the answer is correct)
+4. run_evals                    (upload the dataset once, then evaluate each system)
+"""
 from langsmith import Client, evaluate
 from app.config import llm
 from app.rag import build_vector_store, vector_rag, vectorless_rag
 
+# 1. The dataset
 DATASET = "it-policy-qa"
 EXAMPLES = [
-    ("What is the minimum password length?", "14 characters"),
-    ("How long may a just-in-time privileged session last?", "At most 8 hours"),
-    ("How often are privileged accounts re-certified?", "Monthly"),
-    ("Can a contractor get admin access to aws-prod?", "No, contractors may never hold write or admin access to Restricted systems"),
+    {"inputs": {"question": "What is the minimum password length?"},
+     "reference_outputs": {"answer": "14 characters"}},
+    {"inputs": {"question": "How long may a just-in-time privileged session last?"},
+     "reference_outputs": {"answer": "At most 8 hours"}},
+    {"inputs": {"question": "How often are privileged accounts re-certified?"},
+     "reference_outputs": {"answer": "Monthly"}},
+    {"inputs": {"question": "Can a contractor get admin access to aws-prod?"},
+     "reference_outputs": {"answer": "No, contractors may never hold write or admin access to Restricted systems"}},
 ]
 
+
+# 2. The two systems we test
 vector_store = build_vector_store()   # built once (this file is only loaded by: uv run main.py eval)
 
 
-# 1. The two systems we test: question in -> answer out
 def ask_vector_rag(inputs):
     return {"answer": vector_rag(inputs["question"], vector_store)}
 
@@ -24,31 +35,29 @@ def ask_vectorless_rag(inputs):
     return {"answer": vectorless_rag(inputs["question"])}
 
 
-# 2. The judge: an LLM says if the answer means the same as the reference answer
-class Grade(BaseModel):
-    correct: bool
-
-
+# 3. The judge
 def correctness(inputs, outputs, reference_outputs):
     prompt = f"""Question: {inputs['question']}
-Reference answer: {reference_outputs['answer']}
+Correct answer: {reference_outputs['answer']}
 Student answer: {outputs['answer']}
-Is the student answer correct?"""
-    grade = llm.with_structured_output(Grade).invoke(prompt)
-    return grade.correct
+Does the student answer mean the same as the correct answer? Reply with only yes or no."""
+    reply = llm.invoke(prompt).content
+    is_correct = reply.strip().lower().startswith("yes")
+    print(f"[LLM Evaluation] correct: {is_correct}\n")
+    return is_correct
 
 
-# 3. Upload the questions (first time only), then score both systems
+# 4. Upload the dataset (first time only), then evaluate both systems
 def run_evals():
     client = Client()
     if not client.has_dataset(dataset_name=DATASET):
         client.create_dataset(dataset_name=DATASET)
-        for question, answer in EXAMPLES:
-            client.create_example(dataset_name=DATASET, inputs={"question": question}, outputs={"answer": answer})
-    print(f"[LLM Evaluation] dataset: {DATASET} ({len(EXAMPLES)} questions)")
+        client.create_examples(dataset_name=DATASET, examples=EXAMPLES)
 
-    for name, system in [("vector-rag", ask_vector_rag), ("vectorless-rag", ask_vectorless_rag)]:
-        results = evaluate(system, data=DATASET, evaluators=[correctness], experiment_prefix=name)
-        score = results.to_pandas()["feedback.correctness"].mean()
-        print(f"[LLM Evaluation] {name} correctness = {round(score * 100)}%")
-    print("Open smith.langchain.com to compare the two experiments.")
+    print("[LLM Evaluation] ===== Vector RAG (FAISS) =====")
+    evaluate(ask_vector_rag, data=DATASET, evaluators=[correctness], experiment_prefix="vector-rag")
+
+    print("[LLM Evaluation] ===== Vectorless RAG =====")
+    evaluate(ask_vectorless_rag, data=DATASET, evaluators=[correctness], experiment_prefix="vectorless-rag")
+
+    print("Open smith.langchain.com to compare the two experiments side by side.")

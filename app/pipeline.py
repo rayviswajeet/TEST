@@ -1,7 +1,6 @@
 """LangGraph: the email workflow as a StateGraph."""
 import json
 from typing import TypedDict
-from langchain_core.messages import HumanMessage
 from langgraph.graph import StateGraph, START, END
 
 from app.guardrails import BLOCKED_MSG
@@ -26,7 +25,7 @@ class EmailState(TypedDict, total=False):
 def extract_node(state: EmailState):
     """Run guardrails and turn the email into a Ticket (None if blocked)."""
     print("[LangGraph] node 'extract'")
-    result = extractor.invoke({"messages": [HumanMessage(content=state["body"])]})
+    result = extractor.invoke({"messages": [{"role": "user", "content": state["body"]}]})
     ticket = result.get("structured_response")
     if ticket is None:
         print("[Guardrails] prompt injection BLOCKED")

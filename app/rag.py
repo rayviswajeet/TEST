@@ -65,9 +65,10 @@ Which section numbers contain the answer?"""
 
     context = ""
     for number in pick.section_numbers:
-        if number < len(sections):
-            print(f"[Vectorless RAG] LLM picked section {number}: {sections[number].metadata}")
-            context += sections[number].page_content + "\n\n"
+        if 0 <= number < len(sections):
+            section = sections[number]
+            print(f"[Vectorless RAG] LLM picked section {number}: {section.metadata}")
+            context += f"{section.metadata}\n{section.page_content}\n\n"   # title too, so the LLM can name the rule
     if context == "":          # the LLM picked nothing -> use the whole (short) policy
         context = policy
 

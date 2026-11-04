@@ -49,5 +49,5 @@ deep_agent = create_deep_agent(
 
 def make_report():
     print("[Deep Agents] compliance lead is asking the auditor sub-agent ...")
-    result = deep_agent.invoke({"messages": [("user", "Create today's compliance report.")]})
+    result = deep_agent.invoke({"messages": [{"role": "user", "content": "Create today's compliance report."}]})
     print(result["messages"][-1].content)
