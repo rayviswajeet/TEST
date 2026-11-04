@@ -1,0 +1,4 @@
+From: karan.sethi@acme.com
+Subject: Jira admin for 4 hours - board cleanup
+
+Hi, Karan Sethi (EMP-2003) again. I need admin access on jira for 4 hours this afternoon to clean up the backend board workflows. There's no incident, it's planned maintenance on an internal tool.

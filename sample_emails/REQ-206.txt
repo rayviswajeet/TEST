@@ -1,0 +1,4 @@
+From: rohan.mehta@acme.com
+Subject: Restore my Jira read access
+
+Hi, Rohan Mehta (EMP-2007). Please give me read access to jira for 8 hours. I still need to hand over a few tickets to the team.

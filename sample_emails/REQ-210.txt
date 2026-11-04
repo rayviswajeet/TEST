@@ -1,0 +1,4 @@
+From: vikram.joshi@acme.com
+Subject: Access for new joiner
+
+Hello, I'm Vikram Joshi, I joined the sales team on Monday. My manager said I should ask you for read access to aws-prod for 24 hours so I can look at the customer dashboards.

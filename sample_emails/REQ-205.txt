@@ -1,0 +1,4 @@
+From: tarun.nair@acme.com
+Subject: prod-db read access
+
+Hey, Tarun Nair here (EMP-2004), contractor. I need read access to prod-db for 12 hours to pull some numbers for a report. I don't have an incident number yet, I'll send it later.

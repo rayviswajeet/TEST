@@ -1,0 +1,4 @@
+From: divya.pillai@acme.com
+Subject: New password rejected
+
+Hi, Divya again (EMP-2002). My password expired and the system keeps rejecting my new one. It's 12 characters with numbers and symbols. What are the actual rules for a valid password?

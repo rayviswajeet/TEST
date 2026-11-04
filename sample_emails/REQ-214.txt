@@ -1,0 +1,4 @@
+From: tarun.nair@acme.com
+Subject: Jira write access
+
+Hi, Tarun Nair (EMP-2004) again. Since prod-db needs an incident, could I instead get write access on jira for 4 hours to update the report tickets? Jira is internal, so no incident should be needed.

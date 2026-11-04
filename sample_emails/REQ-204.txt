@@ -1,0 +1,4 @@
+From: neha.kapoor@acme.com
+Subject: Re: URGENT - website down - read access instead
+
+Hi again, Neha Kapoor (EMP-2005) here. I understand that as a contractor I can't get admin. Could I at least get read access to aws-prod for 48 hours so I can go through the load balancer logs for INC-4501 and send the findings to the permanent team?
