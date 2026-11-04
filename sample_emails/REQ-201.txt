@@ -1,4 +1,7 @@
 From: divya.pillai@acme.com
-Subject: Read access to prod-db for INC-4412
+Subject: Two accesses for incident INC-4412
 
-Hi team, this is Divya Pillai (EMP-2002). Orders are failing at checkout and I'm on incident INC-4412. I need read access to prod-db for 48 hours to check the order tables. If anything is unclear you can call me on +91 98200 11002. Thanks!
+Hi team, this is Divya Pillai (EMP-2002). Orders are failing at checkout and I'm on incident INC-4412. I need two things:
+1. Read access to prod-db to check the order tables.
+2. Write access on prod-db to fix the broken orders.
+If anything is unclear you can call me on +91 98200 11002. Thanks!

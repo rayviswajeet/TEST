@@ -6,6 +6,7 @@ from langgraph.graph import StateGraph, START, END
 from app.guardrails import BLOCKED_MSG
 from app.desk import extractor, handle_request
 from app.gateway import draft_reply
+from app.tools import EMPLOYEES
 
 TICKETS = []   # every email answered in this run (report.py reads this list)
 
@@ -46,7 +47,11 @@ def route_after_extract(state: EmailState):
 def desk_node(state: EmailState):
     """Desk agent: tools + policy search + human approval."""
     print("[LangGraph] node 'desk' - ReAct loop: model -> tools -> model ... (create_agent)")
-    prompt = f"Ticket: {json.dumps(state['ticket'])}\n\nOriginal email:\n{state['body']}"
+    # Identity check: trust the sender's email address, not the name written in the email
+    emp = next((e for e in EMPLOYEES if e.get("email") == state["sender"].lower()), None)
+    verified = emp["employee_id"] if emp else "UNKNOWN (sender not in employee directory)"
+    print(f"[Identity] {state['sender']} -> {verified}")
+    prompt = f"Verified sender: {verified}\n\nTicket: {json.dumps(state['ticket'])}\n\nOriginal email:\n{state['body']}"
     answer = handle_request(prompt, customer=state["sender"])
     return {"answer": answer}
 

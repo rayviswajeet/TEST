@@ -45,8 +45,8 @@ def ping_server_status(server_name: str) -> str:
 
 
 @tool
-def grant_system_access(employee_id: str, system: str, access_level: str, duration_hours: int, reason: str) -> str:
-    """HIGH RISK: give an employee temporary access to a system. Needs human approval."""
+def grant_system_access(employee_id: str, system: str, access_level: str, reason: str) -> str:
+    """HIGH RISK: give an employee access to a system. Needs human approval."""
     emp = find_employee(employee_id)
     if emp is None:
         print(f"[Tools] grant_system_access({employee_id}) -> employee not found")
@@ -54,7 +54,7 @@ def grant_system_access(employee_id: str, system: str, access_level: str, durati
 
     emp["current_ad_groups"].append(f"{system}-{access_level}")
     grant = {"employee_id": employee_id, "name": emp["name"], "system": system,
-             "level": access_level, "hours": duration_hours, "reason": reason}
+             "level": access_level, "reason": reason}
     GRANTS.append(grant)
     print(f"[Tools] grant_system_access -> {grant}")
-    return f"Granted {access_level} on {system} to {emp['name']} for {duration_hours} hours."
+    return f"Granted {access_level} on {system} to {emp['name']}."

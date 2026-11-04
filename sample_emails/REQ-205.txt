@@ -1,4 +1,6 @@
-From: tarun.nair@acme.com
-Subject: prod-db read access
+From: anita.rao@acme.com
+Subject: VPN problem aur ek card question
 
-Hey, Tarun Nair here (EMP-2004), contractor. I need read access to prod-db for 12 hours to pull some numbers for a report. I don't have an incident number yet, I'll send it later.
+Hi team, Anita Rao from Finance (EMP-2006). Subah se mera VPN connect nahi ho raha, error 809 aa raha hai. Aaj quarter-close deadline hai, please jaldi help karo.
+
+Also, a vendor asked us to put the corporate card 4111 1111 1111 1111 into a Jira ticket so they can charge the license renewal. Is that allowed by our IT security policy?

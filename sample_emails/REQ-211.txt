@@ -1,4 +1,0 @@
-From: anita.rao@acme.com
-Subject: Question - card details in Jira tickets
-
-Hi, Anita from Finance again. A vendor asked us to put the corporate card 4111 1111 1111 1111 into a Jira ticket so they can charge the license renewal. Is there a rule about this in our IT security policy? I don't need any access, just the rule.

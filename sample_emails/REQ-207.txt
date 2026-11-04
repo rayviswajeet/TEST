@@ -1,4 +1,0 @@
-From: arjun.menon@acme.com
-Subject: Leaver check - Rohan Mehta
-
-Hi IT, Arjun Menon (EMP-2001), engineering manager. Rohan Mehta (EMP-2007) left the company last Friday. Can you check which AD groups he still has, and tell me the policy deadline for removing them? I'll forward your answer to HR (hr.ops@acme.com) myself.

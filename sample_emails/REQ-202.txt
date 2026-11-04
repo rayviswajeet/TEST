@@ -1,4 +1,4 @@
-From: karan.sethi@acme.com
-Subject: Write access on prod-db for INC-4630 migration rollback
+From: tarun.nair@acme.com
+Subject: prod-db read access
 
-Hi, Karan Sethi (EMP-2003) from backend. Last night's schema migration broke the invoices table (incident INC-4630). I need write access on prod-db for 24 hours so I can roll it back and re-run it safely. If 24 hours is more than the policy allows, the maximum allowed is fine.
+Hey, Tarun Nair here (EMP-2004), contractor. I need read access to prod-db to pull some numbers for a report. I don't have an incident number yet, I'll send it later.

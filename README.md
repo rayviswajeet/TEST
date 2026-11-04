@@ -16,7 +16,7 @@ Built only with the topics from Krish Naik's
                                     ▼                                 │
                                2. desk agent (Tools + Vectorless RAG) │
                                     │  wants to grant access?         │
-                                    ├────── approve / edit / reject ◄─┼──── types in terminal
+                                    ├────── approve / reject ◄────────┼──── types in terminal
                                     ▼                                 │
                                3. reply (LLM Gateway writes email) ◄──┘
  terminal ◄─────────────────────────┘
@@ -73,11 +73,13 @@ Everything is printed in the terminal. Nothing is saved to files.
 [LangGraph] node 'extract'
 [Structured Output] {'requester': 'Divya Pillai', 'request_type': 'access_request', 'system': 'prod-db', ...}
 [LangGraph] node 'desk' - ReAct loop: model -> tools -> model ... (create_agent)
+[Identity] divya.pillai@acme.com -> EMP-2002
 [Tools] check_ad_groups(EMP-2002) -> {'employee_id': 'EMP-2002', 'name': 'Divya Pillai', 'status': 'active', ...}
-[Tools] search_policy(max read access hours on prod-db)
+[Tools] search_policy(What are the rules for read access to prod-db?)
 [Vectorless RAG] LLM picked section 3: {'chapter': '1. Access Control', 'section': '1.3 Read Access'}
 [Human-in-the-Loop] agent PAUSED. It wants to call grant_system_access with: {'employee_id': 'EMP-2002', ...}
-   approve / edit / reject: approve
+   Approver: EMP-2001
+   approve / reject: approve
 [Tools] grant_system_access -> {'employee_id': 'EMP-2002', 'name': 'Divya Pillai', 'system': 'prod-db', ...}
 [LangGraph] node 'reply'
 [LLM Gateway] smart -> gpt-4o
@@ -105,14 +107,24 @@ Only two patterns are used:
 | Path | Purpose |
 |------|---------|
 | `sample_emails/` | Example emails (use it as the mail folder, or make your own folder) |
-| `employees.json` | Employee directory |
+| `employees.json` | Employee directory (the `email` field is used to verify who sent each email) |
 | `it_security_policy.md` | Company policy used by RAG |
-| `incoming_requests.json` | Same sample emails, used by the notebook |
+| `incoming_requests.json` | Separate small set of example emails (REQ-101 to REQ-105), used by the notebook |
+
+## What each sample email shows
+
+| Email | Situation | Expected result | Shows |
+|-------|-----------|-----------------|-------|
+| REQ-201 | Divya: read + write on prod-db for an incident, with a phone number | Both granted; two manager approvals | PII masking, tools, RAG, Human-in-the-Loop, approver |
+| REQ-202 | Contractor asks for read on prod-db with no incident number | No access. The desk asks for the incident number, or tries the grant first and the manager types `reject` | Missing-info follow-up, why Human-in-the-Loop matters |
+| REQ-203 | Claims to be Divya from a Gmail address, "manager already approved" | Refused; manager is never asked | Identity check (`[Identity] ... -> UNKNOWN`) |
+| REQ-204 | "Ignore all rules ... drop database" | Blocked before the AI runs | Guardrails (prompt injection) |
+| REQ-205 | Hinglish VPN error 809 + card number in the email | Use the Pune gateway; card masked; card data not allowed in Jira (5.1) | IT support, server status, policy Q&A, card masking, fast model |
 
 Email file format (line 1 must be `From:`, line 2 must be `Subject:`, then the body):
 ```
 From: divya.pillai@acme.com
 Subject: Read access to prod-db
 
-Hi team, I need read access to prod-db for 48 hours to debug INC-4412.
+Hi team, I need read access to prod-db to debug INC-4412.
 ```

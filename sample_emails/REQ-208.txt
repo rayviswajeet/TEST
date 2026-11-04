@@ -1,4 +1,0 @@
-From: anita.rao@acme.com
-Subject: VPN not working - error 809
-
-Anita Rao from Finance (EMP-2006). My VPN has not connected since this morning, it keeps showing error 809. I have the quarter-close deadline today, please help asap.

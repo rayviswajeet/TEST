@@ -78,6 +78,6 @@ Which section numbers answer the question?"""
 # 4. The tool the desk agent calls
 @tool
 def search_policy(question: str) -> str:
-    """Search the IT security policy for rules and time limits."""
+    """Search the IT security policy for its rules."""
     print(f"[Tools] search_policy({question})")
     return vectorless_rag(question)

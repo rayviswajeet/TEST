@@ -10,12 +10,12 @@ from app.config import llm
 from app.rag import build_vector_store, vector_rag, vectorless_rag
 
 # 1. The dataset
-DATASET = "it-policy-qa"
+DATASET = "it-policy-qa-v2"   # new name: an existing dataset is never re-uploaded
 EXAMPLES = [
     {"inputs": {"question": "What is the minimum password length?"},
      "reference_outputs": {"answer": "14 characters"}},
-    {"inputs": {"question": "How long may a just-in-time privileged session last?"},
-     "reference_outputs": {"answer": "At most 8 hours"}},
+    {"inputs": {"question": "What does a person need before getting write or admin access?"},
+     "reference_outputs": {"answer": "They must be enrolled in MFA (and on a Restricted system also need an open incident ticket)"}},
     {"inputs": {"question": "How often are privileged accounts re-certified?"},
      "reference_outputs": {"answer": "Monthly"}},
     {"inputs": {"question": "Can a contractor get admin access to aws-prod?"},
